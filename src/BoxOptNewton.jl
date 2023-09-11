@@ -124,16 +124,15 @@ function minimize(
       end
     else
       while true
+        α *= τ
         xnew = clamp.(muladd.(α, d, x), -EXTREME, EXTREME)
         Fxnew = f(xnew)
-        if (Fx - Fxnew >= α * t)
-          (Fx - Fxnew) <= fnorm && return xnew
-          sum(abs2, xnew - x) <= xnorm^2 && return xnew
-          x = xnew
-          Fx = Fxnew
-          break
-        end
-        α *= τ
+        ((Fx - Fxnew) < (α * t)) && continue
+        (Fx - Fxnew) <= fnorm && return xnew
+        sum(abs2, xnew - x) <= xnorm^2 && return xnew
+        x = xnew
+        Fx = Fxnew
+        break
       end
     end
   end

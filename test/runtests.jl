@@ -1,5 +1,5 @@
 using BoxOptNewton, StaticArrays, ForwardDiff
-using Test
+using Test, JET, Aqua
 
 # minimize fcore
 # (2*u1 + u2 + u1*u2) / (u1 * u2)
@@ -34,6 +34,9 @@ end
 fsoft(x::SVector{2}) = fsoft((x[1], x[2]))
 
 @testset "BoxOptNewton.jl" begin
+  Aqua.test_all(BoxOptNewton, ambiguities=false) # ForwardDiff fails ambiguities
+  @test length(Test.detect_ambiguities(BoxOptNewton)) == 0
+  JET.@test_opt BoxOptNewton.minimize(fsoft, (2, 2), (1, 1), (32, 32))
   opt1 = BoxOptNewton.minimize(fsoft, (2, 2), (1, 1), (32, 32))
   @test SVector(opt1) ≈ SVector(3.4567718680186568, 7.799906157078232) rtol =
     1e-6
