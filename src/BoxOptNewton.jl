@@ -87,7 +87,7 @@ function minimize(
 ) where {F}
   n = 0
   Fx = f(x)
-  α = 1.0
+  α = 0.25
   while n < N
     n += 1
     d, grad = delta(f, x)
@@ -127,9 +127,9 @@ function minimize(
         α *= τ
         xnew = clamp.(muladd.(α, d, x), -EXTREME, EXTREME)
         Fxnew = f(xnew)
+        sum(abs2, xnew - x) <= xnorm^2 && return xnew
         ((Fx - Fxnew) < (α * t)) && continue
         (Fx - Fxnew) <= fnorm && return xnew
-        sum(abs2, xnew - x) <= xnorm^2 && return xnew
         x = xnew
         Fx = Fxnew
         break
